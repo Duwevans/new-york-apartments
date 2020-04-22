@@ -15,11 +15,10 @@ pd.options.mode.chained_assignment = None  # default='warn'
 external_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap-grid.min.css"]
 
 
-# todo: function to get all datasets
-#  must work with range slider
 def get_dataset():
     """"""
-    apartment_data = pd.read_csv('/Users/duncanevans/Documents/apartment_data.csv')
+    apartment_data = pd.read_csv('https://raw.githubusercontent.com/Duwevans/'
+                                 'new-york-apartments/master/apartment_data.csv')
     apartment_data['post_date'] = pd.to_datetime(apartment_data['post_datetime']).dt.date
 
     return apartment_data
