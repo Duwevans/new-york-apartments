@@ -124,6 +124,7 @@ median_prices, mean_prices = get_all_time_prices(apartment_data)
 
 
 app = dash.Dash('apartments', external_stylesheets=external_stylesheets)
+server = app.server
 
 
 # get count of all neighborhoods as a list
