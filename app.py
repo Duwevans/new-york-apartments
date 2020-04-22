@@ -137,7 +137,7 @@ app.layout = html.Div([
 
     html.Div([html.H1("NYC Rooms for Rent")], style={'textAlign': "center"}),
     html.Div([html.H5(
-        "The data below details the prices for room in apartment shares in NYC neighborhoods. "
+        "The data below details the prices for single rooms in apartment shares across NYC neighborhoods. "
         "This data is pulled from advertisements posted on craigslist on a daily basis."
     )], style={'textAlign': "center"}),
 
