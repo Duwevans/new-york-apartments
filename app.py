@@ -184,7 +184,7 @@ app.layout = html.Div([
     ]),
     dcc.Markdown('''
 
-        
+        Showing apartments from: 
         '''),
 
     html.Div(id='output-container-range-slider'),
@@ -243,7 +243,7 @@ def update_range_output(value):
     low_ = value[0]
     high_ = value[1]
 
-    return "Showing apartments from $" + str(low_) + " to $" + str(high_)
+    return "\n\n$" + str(low_) + " to $" + str(high_)
 
 
 @app.callback(
