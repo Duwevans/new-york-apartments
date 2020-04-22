@@ -238,7 +238,7 @@ def update_range_output(value):
     low_ = value[0]
     high_ = value[1]
 
-    return "Showing apartments from $" + str(low_) + " to $" + str(high_)
+    return "\nShowing apartments from $" + str(low_) + " to $" + str(high_)
 
 
 @app.callback(
