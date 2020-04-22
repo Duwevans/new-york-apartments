@@ -135,10 +135,15 @@ sorted_hoods = hoods['neighborhood'].tolist()
 # create the layout of the app
 app.layout = html.Div([
 
+    html.Div([html.H1("NYC Rooms for Rent")], style={'textAlign': "center"}),
+    html.Div([html.H5(
+        "The data below details the prices for room in apartment shares in NYC neighborhoods. "
+        "This data is pulled from advertisements posted on craigslist on a daily basis."
+    )], style={'textAlign': "center"}),
 
     dcc.Markdown('''
     
-        Select neighborhood:
+        Select neighborhood(s):
         '''),
 
     dcc.Dropdown(
@@ -160,7 +165,7 @@ app.layout = html.Div([
 
     dcc.Markdown('''
 
-        Select price range:
+        Select a price range:
         '''),
 
     html.Div([
@@ -243,7 +248,7 @@ def update_range_output(value):
     low_ = value[0]
     high_ = value[1]
 
-    return "\n\n$" + str(low_) + " to $" + str(high_)
+    return "\n\n$" + str(low_) + " to $" + str(high_) + " monthly"
 
 
 @app.callback(
