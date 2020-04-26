@@ -289,7 +289,7 @@ def update_posts_by_date_series(neighborhoods, price_range):
         title = "Count of Posts per Date",
         xaxis = {"title": "Date",
                  "type": "date",
-                 "range": ['2020-04-01', '2020-04-30'],
+                 #  "range": ['2020-04-01', '2020-04-30'],
                  },
         yaxis = {"title": "Count of Posts",
                  "range": [0, 30]},
