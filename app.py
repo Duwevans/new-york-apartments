@@ -340,10 +340,12 @@ def update_price_by_date_series(neighborhoods, price_range):
         title = "Median Monthly Rent per Date",
         xaxis = {"title": "Date",
                  "type": "date",
-                 "range": ['2020-04-01', '2020-04-30'],
+                 #  "range": ['2020-04-01', '2020-04-30'],
                  },
-        yaxis = {"title": "Median Rent",
-                 "range": [0, 3000]},
+        yaxis = {
+            "title": "Median Rent",
+            "range": [0, 3000]
+        },
 
     )
 
