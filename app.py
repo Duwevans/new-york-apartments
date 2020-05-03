@@ -35,6 +35,8 @@ def get_dataset(connection):
     SELECT * FROM rooms;
     """
     apartment_data = pd.read_sql(sql, con=connection)
+    
+    apartment_data['post_date'] = pd.to_datetime(apartment_data['post_datetime']).dt.date
 
     return apartment_data
 
