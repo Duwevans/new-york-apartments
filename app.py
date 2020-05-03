@@ -152,10 +152,11 @@ sorted_hoods = hoods['neighborhood'].tolist()
 # create the layout of the app
 app.layout = html.Div([
 
-    html.Div([html.H1("NYC Rooms for Rent")], style={'textAlign': "center"}),
+    html.Div([html.H1("What Does a Room Cost in NYC?")], style={'textAlign': "center"}),
     html.Div([html.H5(
-        "The data below details the prices for single rooms in apartment shares across NYC neighborhoods. "
-        "This data is pulled from advertisements posted on craigslist on a daily basis."
+        "The data below details the monthly rent prices for single rooms in apartment shares across NYC neighborhoods. "
+        "This data is scraped from advertisements posted on craigslist on a daily basis. "
+        "Data collection started in April of 2020."
     )], style={'textAlign': "center"}),
 
     dcc.Markdown('''
