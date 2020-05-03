@@ -27,15 +27,15 @@ database = 'postgres'
 
 def get_dataset(connection):
     """"""
-    apartment_data = pd.read_csv('https://raw.githubusercontent.com/Duwevans/'
-                                 'new-york-apartments/master/apartment_data.csv')
-    apartment_data['post_date'] = pd.to_datetime(apartment_data['post_datetime']).dt.date
+    #  apartment_data = pd.read_csv('https://raw.githubusercontent.com/Duwevans/'
+    #                             'new-york-apartments/master/apartment_data.csv')
+    #  apartment_data['post_date'] = pd.to_datetime(apartment_data['post_datetime']).dt.date
 
     sql = """
     SELECT * FROM rooms;
     """
     apartment_data = pd.read_sql(sql, con=connection)
-    
+
     apartment_data['post_date'] = pd.to_datetime(apartment_data['post_datetime']).dt.date
 
     return apartment_data
