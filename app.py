@@ -141,6 +141,8 @@ median_prices, mean_prices = get_all_time_prices(apartment_data)
 
 
 app = dash.Dash('apartments', external_stylesheets=external_stylesheets)
+app.title = 'NYC Room $s'
+
 server = app.server
 
 
