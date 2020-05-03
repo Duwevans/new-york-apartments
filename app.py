@@ -9,17 +9,32 @@ import dash_table
 import datetime as dt
 import plotly.graph_objs as go
 from datetime import datetime
+import psycopg2
+import os
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
 external_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap-grid.min.css"]
 
+# amazon rds database connection
+connection = psycopg2.connect(
+host = os.environ['HOST'],
+port = '5432',
+user = 'duncan',
+password = os.environ['PASSWORD'],
+database = 'postgres'
+)
 
-def get_dataset():
+def get_dataset(connection):
     """"""
     apartment_data = pd.read_csv('https://raw.githubusercontent.com/Duwevans/'
                                  'new-york-apartments/master/apartment_data.csv')
     apartment_data['post_date'] = pd.to_datetime(apartment_data['post_datetime']).dt.date
+
+    sql = """
+    SELECT * FROM rooms;
+    """
+    apartment_data = pd.read_sql(sql, con=connection)
 
     return apartment_data
 
@@ -106,9 +121,9 @@ def get_all_time_prices(apartment_data):
     return df_median, df_mean
 
 
-def get_starting_data():
+def get_starting_data(connection):
 
-    apartment_data = get_dataset()
+    apartment_data = get_dataset(connection)
 
     all_dates = get_posts_per_date(apartment_data)
 
@@ -118,7 +133,7 @@ def get_starting_data():
 
 
 # get major data sets
-apartment_data, all_dates, all_prices = get_starting_data()
+apartment_data, all_dates, all_prices = get_starting_data(connection)
 
 median_prices, mean_prices = get_all_time_prices(apartment_data)
 
