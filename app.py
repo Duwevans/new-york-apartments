@@ -139,11 +139,11 @@ def get_starting_data(connection):
 def determine_apt_size(post_title):
     """"""
     studio = ['studio']
-    one_bed = ['1br', 'one bedroom', '1 bedroom', '1 br']
-    two_bed = ['2br', 'two bedroom', '2 bedroom', '2 br']
-    three_bed = ['3br', 'three bedroom', '3 bedroom', '3 br']
-    four_bed = ['4br', 'four bedroom', '4 bedroom', '4 br']
-    five_bed = ['5br', 'five bedroom', '5 bedroom', '5 br']
+    one_bed = ['1br', 'one bedroom', '1 bedroom', '1 br', '1 bdr', '1bdr']
+    two_bed = ['2br', 'two bedroom', '2 bedroom', '2 br', '2 bdr', '2bdr']
+    three_bed = ['3br', 'three bedroom', '3 bedroom', '3 br', '3 bdr', '3bdr']
+    four_bed = ['4br', 'four bedroom', '4 bedroom', '4 br', '4 bdr', '4bdr']
+    five_bed = ['5br', 'five bedroom', '5 bedroom', '5 br', '5 bdr', '5bdr']
 
     post_title = post_title.lower()
 
@@ -160,7 +160,7 @@ def determine_apt_size(post_title):
     elif any(word in post_title for word in five_bed):
         apt_size = 'five bedroom'
     else:
-        apt_size = 'unknown'
+        apt_size = 'other'
 
     return apt_size
 
@@ -188,6 +188,8 @@ hoods = pd.DataFrame(apartment_data['neighborhood'].value_counts())
 hoods['neighborhood'] = hoods.index
 sorted_hoods = hoods['neighborhood'].tolist()
 
+sizes = apartment_data['size'].unique().tolist()
+
 # create the layout of the app
 app.layout = html.Div([
 
@@ -200,7 +202,7 @@ app.layout = html.Div([
 
     dcc.Markdown('''
     
-        Select neighborhood(s):
+        Looking for a room in which neighborhood(s):
         '''),
 
     dcc.Dropdown(
@@ -221,8 +223,32 @@ app.layout = html.Div([
     ),
 
     dcc.Markdown('''
+        Looking for a room in which size apartment(s):
+        '''),
+    # todo: room selector
 
-        Select a price range:
+    dcc.Dropdown(
+        id='size_selection',
+        options=[
+            {'label': c, 'value': c}
+            for c in sizes
+
+        ],
+        value=[
+            'studio',
+            'one bedroom',
+            'two bedroom',
+            'three bedroom',
+            'four bedroom',
+            'five bedroom',
+            'other',
+        ],
+        multi=True,
+        clearable=False,
+    ),
+
+    dcc.Markdown('''
+        Looking with a price range of:
         '''),
 
     html.Div([
@@ -353,7 +379,7 @@ def update_posts_by_date_series(neighborhoods, price_range):
                  #  "range": ['2020-04-01', '2020-04-30'],
                  },
         yaxis = {"title": "Count of Posts",
-                 "range": [0, 30]},
+                 "range": [0, 35]},
 
     )
     #  print(all_traces)
