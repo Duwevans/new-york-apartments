@@ -547,7 +547,7 @@ def update_price_by_date_series(neighborhoods, sizes):
      Input('price_range_slider', 'value'),
      Input('size_selection', 'value')]
 )
-def update_all_prices_histogram(neighborhoods, price_range):
+def update_all_prices_histogram(neighborhoods, price_range, sizes):
     """"""
     # get apartment data within price range
     apartment_data_filtered = apply_price_range_apartment_data(
@@ -588,7 +588,7 @@ def update_all_prices_histogram(neighborhoods, price_range):
      Input('price_range_slider', 'value'),
      Input('size_selection', 'value')]
 )
-def update_recent_posts_table(neighborhoods, price_range):
+def update_recent_posts_table(neighborhoods, price_range, sizes):
     """returns a table of the most recent apartment posts"""
     # get apartment data within price range
     apartment_data_filtered = apply_price_range_apartment_data(
