@@ -215,7 +215,6 @@ app.layout = html.Div([
         value=[
             'Upper East Side',
             'East Village',
-            'Williamsburg',
             'Upper West Side',
         ],
         multi=True,
@@ -223,7 +222,7 @@ app.layout = html.Div([
     ),
 
     dcc.Markdown('''
-        Looking for a room in which size apartment(s):
+        Looking for a single room in which size apartment (two+ bedrooms are shared apartments):
         '''),
     # todo: room selector
 
@@ -341,15 +340,21 @@ def update_range_output(value):
 @app.callback(
     Output('post_by_date_series', 'figure'),
     [Input('hood_selection', 'value'),
-     Input('price_range_slider', 'value')]
+     Input('price_range_slider', 'value'),
+     Input('size_selection', 'value')]
 )
-def update_posts_by_date_series(neighborhoods, price_range):
+def update_posts_by_date_series(neighborhoods, price_range, sizes):
     """"""
 
     # get apartment data within price range
     apartment_data_filtered = apply_price_range_apartment_data(
         apartment_data, price_range[0], price_range[1]
     )
+
+    # filter to room size selections
+    apartment_data_filtered = apartment_data_filtered.loc[
+        apartment_data_filtered['size'].isin(sizes)
+    ]
 
     all_dates = get_posts_per_date(apartment_data_filtered)
 
@@ -392,15 +397,21 @@ def update_posts_by_date_series(neighborhoods, price_range):
 @app.callback(
     Output('price_by_date_series', 'figure'),
     [Input('hood_selection', 'value',),
-     Input('price_range_slider', 'value')]
+     Input('price_range_slider', 'value'),
+     Input('size_selection', 'value')]
 )
-def update_price_by_date_series(neighborhoods, price_range):
+def update_price_by_date_series(neighborhoods, price_range, sizes):
     """"""
 
     # get apartment data within price range
     apartment_data_filtered = apply_price_range_apartment_data(
         apartment_data, price_range[0], price_range[1]
     )
+
+    # filter to room size selections
+    apartment_data_filtered = apartment_data_filtered.loc[
+        apartment_data_filtered['size'].isin(sizes)
+    ]
 
     all_prices = get_median_price_per_date(apartment_data_filtered)
 
@@ -444,14 +455,20 @@ def update_price_by_date_series(neighborhoods, price_range):
 # all time median price
 @app.callback(
     Output('all_time_median_chart', 'figure'),
-    [Input('hood_selection', 'value')]
+    [Input('hood_selection', 'value'),
+     Input('size_selection', 'value')]
 )
-def update_price_by_date_series(neighborhoods):
+def update_price_by_date_series(neighborhoods, sizes):
     """"""
 
     neighborhood_df = median_prices.loc[median_prices['neighborhood'].isin(neighborhoods)].sort_values(
         by='post_price', ascending=True
     )
+
+    # filter to room size selections
+    neighborhood_df = neighborhood_df.loc[
+        neighborhood_df['size'].isin(sizes)
+    ]
 
     # scatter trace per neighborhood
     trace = go.Bar(
@@ -481,14 +498,20 @@ def update_price_by_date_series(neighborhoods):
 
 @app.callback(
     Output('all_time_average_chart', 'figure'),
-    [Input('hood_selection', 'value')]
+    [Input('hood_selection', 'value'),
+     Input('size_selection', 'value')]
 )
-def update_price_by_date_series(neighborhoods):
+def update_price_by_date_series(neighborhoods, sizes):
     """"""
 
     neighborhood_df = mean_prices.loc[mean_prices['neighborhood'].isin(neighborhoods)].sort_values(
         by='post_price', ascending=True
     )
+
+    # filter to room size selections
+    neighborhood_df = neighborhood_df.loc[
+        neighborhood_df['size'].isin(sizes)
+    ]
 
     # scatter trace per neighborhood
     trace = go.Bar(
@@ -521,7 +544,8 @@ def update_price_by_date_series(neighborhoods):
 @app.callback(
     Output('all_prices_histogram', 'figure'),
     [Input('hood_selection', 'value'),
-     Input('price_range_slider', 'value')]
+     Input('price_range_slider', 'value'),
+     Input('size_selection', 'value')]
 )
 def update_all_prices_histogram(neighborhoods, price_range):
     """"""
@@ -529,6 +553,11 @@ def update_all_prices_histogram(neighborhoods, price_range):
     apartment_data_filtered = apply_price_range_apartment_data(
         apartment_data, price_range[0], price_range[1]
     )
+
+    # filter to room size selections
+    apartment_data_filtered = apartment_data_filtered.loc[
+        apartment_data_filtered['size'].isin(sizes)
+    ]
 
     all_traces = []
     for neighborhood in neighborhoods:
@@ -556,7 +585,8 @@ def update_all_prices_histogram(neighborhoods, price_range):
 @app.callback(
     Output('recent_posts_table', 'data'),
     [Input('hood_selection', 'value'),
-     Input('price_range_slider', 'value')]
+     Input('price_range_slider', 'value'),
+     Input('size_selection', 'value')]
 )
 def update_recent_posts_table(neighborhoods, price_range):
     """returns a table of the most recent apartment posts"""
@@ -569,12 +599,20 @@ def update_recent_posts_table(neighborhoods, price_range):
         apartment_data_filtered['neighborhood'].isin(neighborhoods)
     ]
 
+    # filter to room size selections
+    apartment_data_filtered = apartment_data_filtered.loc[
+        apartment_data_filtered['size'].isin(sizes)
+    ]
+
     # sort by most recent posts
     apartment_data_filtered = apartment_data_filtered.sort_values(by=['post_datetime'], ascending=False)
 
     data = apartment_data_filtered.to_dict(orient='records')
 
     return data
+
+
+# todo: all neighborhood price chart
 
 
 if __name__ == '__main__':
