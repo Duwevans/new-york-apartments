@@ -25,6 +25,7 @@ password = os.environ['PASSWORD'],
 database = 'postgres'
 )
 
+
 def get_dataset(connection):
     """"""
     #  apartment_data = pd.read_csv('https://raw.githubusercontent.com/Duwevans/'
@@ -208,7 +209,9 @@ app.layout = html.Div([
         ),
     ]),
     dcc.Markdown('''
-
+        
+        
+        
         Showing apartments from: 
         '''),
 
@@ -241,7 +244,7 @@ app.layout = html.Div([
     Posts found:
     '''),
 
-    # todo: data table
+    # data table
     html.Div([
         dash_table.DataTable(
             id='recent_posts_table',
@@ -486,14 +489,13 @@ def update_all_prices_histogram(neighborhoods, price_range):
     return figure
 
 
-# todo: table of most recent posts
 @app.callback(
     Output('recent_posts_table', 'data'),
     [Input('hood_selection', 'value'),
      Input('price_range_slider', 'value')]
 )
 def update_recent_posts_table(neighborhoods, price_range):
-    """"""
+    """returns a table of the most recent apartment posts"""
     # get apartment data within price range
     apartment_data_filtered = apply_price_range_apartment_data(
         apartment_data, price_range[0], price_range[1]
@@ -502,6 +504,9 @@ def update_recent_posts_table(neighborhoods, price_range):
     apartment_data_filtered = apartment_data_filtered.loc[
         apartment_data_filtered['neighborhood'].isin(neighborhoods)
     ]
+
+    # sort by most recent posts
+    apartment_data_filtered = apartment_data_filtered.sort_values(by=['post_datetime'], ascending=False)
 
     data = apartment_data_filtered.to_dict(orient='records')
 
