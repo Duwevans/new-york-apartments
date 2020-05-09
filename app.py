@@ -135,11 +135,47 @@ def get_starting_data(connection):
     return apartment_data, all_dates, all_prices
 
 
+# estimate apartment size/bedrooms
+def determine_apt_size(post_title):
+    """"""
+    studio = ['studio']
+    one_bed = ['1br', 'one bedroom', '1 bedroom', '1 br']
+    two_bed = ['2br', 'two bedroom', '2 bedroom', '2 br']
+    three_bed = ['3br', 'three bedroom', '3 bedroom', '3 br']
+    four_bed = ['4br', 'four bedroom', '4 bedroom', '4 br']
+    five_bed = ['5br', 'five bedroom', '5 bedroom', '5 br']
+
+    post_title = post_title.lower()
+
+    if any(word in post_title for word in studio):
+        apt_size = 'studio'
+    elif any(word in post_title for word in one_bed):
+        apt_size = 'one bedroom'
+    elif any(word in post_title for word in two_bed):
+        apt_size = 'two bedroom'
+    elif any(word in post_title for word in three_bed):
+        apt_size = 'three bedroom'
+    elif any(word in post_title for word in four_bed):
+        apt_size = 'four bedroom'
+    elif any(word in post_title for word in five_bed):
+        apt_size = 'five bedroom'
+    else:
+        apt_size = 'unknown'
+
+    return apt_size
+
+
 # get major data sets
 apartment_data, all_dates, all_prices = get_starting_data(connection)
 
 median_prices, mean_prices = get_all_time_prices(apartment_data)
 
+# determine size of the apartment
+apartment_data['size'] = apartment_data.apply(
+        lambda x: determine_apt_size(
+            x['post_title_text']
+            ),
+        axis=1)
 
 app = dash.Dash('apartments', external_stylesheets=external_stylesheets)
 app.title = 'NYC Room $s'
@@ -210,9 +246,10 @@ app.layout = html.Div([
     ]),
     dcc.Markdown('''
         
-        
-        
         Showing apartments from: 
+        '''),
+    dcc.Markdown('''
+
         '''),
 
     html.Div(id='output-container-range-slider'),
@@ -253,6 +290,7 @@ app.layout = html.Div([
                 {'name': 'Price', 'id': 'post_price'},
                 {'name': 'Title', 'id': 'post_title_text'},
                 {'name': 'Date', 'id': 'post_date'},
+                {'name': 'Size', 'id': 'size'},
                 {'name': 'Link', 'id': 'post_link'},
             ],
             style_table={
