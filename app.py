@@ -288,22 +288,10 @@ app.layout = html.Div([
     html.Div([
             dcc.Graph(id='all_prices_histogram'),
         ]),
-    html.Div([
-        html.Div([
-            dcc.Graph(id='all_time_median_chart'),
-        ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'left'}),
-
-        html.Div([
-            dcc.Graph(id='all_time_average_chart'),
-        ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'right'})
-    ],
-        ),
 
     dcc.Markdown('''
 
-    Posts found:
+    ##### I found the following posts for you:
     '''),
 
     # data table
@@ -323,7 +311,20 @@ app.layout = html.Div([
                     'overflowY': 'scroll',
     },
         ),
-    ])
+    ]),
+
+    html.Div([
+        html.Div([
+            dcc.Graph(id='all_time_median_chart'),
+        ],
+            style={'width': '48%', 'display': 'inline-block', 'align': 'left'}),
+
+        html.Div([
+            dcc.Graph(id='all_time_average_chart'),
+        ],
+            style={'width': '48%', 'display': 'inline-block', 'align': 'right'})
+    ],
+        ),
 ])
 
 
@@ -455,20 +456,14 @@ def update_price_by_date_series(neighborhoods, price_range, sizes):
 # all time median price
 @app.callback(
     Output('all_time_median_chart', 'figure'),
-    [Input('hood_selection', 'value'),
-     Input('size_selection', 'value')]
+    [Input('hood_selection', 'value')]
 )
-def update_price_by_date_series(neighborhoods, sizes):
+def update_price_by_date_series(neighborhoods):
     """"""
 
     neighborhood_df = median_prices.loc[median_prices['neighborhood'].isin(neighborhoods)].sort_values(
         by='post_price', ascending=True
     )
-
-    # filter to room size selections
-    neighborhood_df = neighborhood_df.loc[
-        neighborhood_df['size'].isin(sizes)
-    ]
 
     # scatter trace per neighborhood
     trace = go.Bar(
@@ -498,20 +493,14 @@ def update_price_by_date_series(neighborhoods, sizes):
 
 @app.callback(
     Output('all_time_average_chart', 'figure'),
-    [Input('hood_selection', 'value'),
-     Input('size_selection', 'value')]
+    [Input('hood_selection', 'value')]
 )
-def update_price_by_date_series(neighborhoods, sizes):
+def update_price_by_date_series(neighborhoods):
     """"""
 
     neighborhood_df = mean_prices.loc[mean_prices['neighborhood'].isin(neighborhoods)].sort_values(
         by='post_price', ascending=True
     )
-
-    # filter to room size selections
-    neighborhood_df = neighborhood_df.loc[
-        neighborhood_df['size'].isin(sizes)
-    ]
 
     # scatter trace per neighborhood
     trace = go.Bar(
