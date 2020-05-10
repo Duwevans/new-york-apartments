@@ -165,6 +165,26 @@ def determine_apt_size(post_title):
     return apt_size
 
 
+# find the most common neighborhoods
+def get_most_common_neighborhoods(apartment_data):
+    """"""
+
+    most_common = pd.DataFrame(
+        apartment_data['neighborhood'].value_counts()
+    ).rename(
+        columns={
+            'neighborhood': 'count'
+        }
+    )
+    most_common['neighborhood'] = most_common.index
+    most_common = most_common.reset_index(drop=True)
+
+    # get neighborhoods with at least 30 results
+    most_common_neighborhoods = most_common.loc[most_common['count'] >= 30]
+
+    return most_common_neighborhoods
+
+
 # get major data sets
 apartment_data, all_dates, all_prices = get_starting_data(connection)
 
@@ -181,6 +201,8 @@ app = dash.Dash('apartments', external_stylesheets=external_stylesheets)
 app.title = 'NYC Room $s'
 
 server = app.server
+
+most_common_apartments = get_most_common_neighborhoods(apartment_data)
 
 
 # get count of all neighborhoods as a list
@@ -313,6 +335,9 @@ app.layout = html.Div([
         ),
     ]),
 
+    dcc.Markdown('''
+    ##### These are the all-time prices for the neighborhoods you're looking in:
+    '''),
     html.Div([
         html.Div([
             dcc.Graph(id='all_time_median_chart'),
@@ -325,6 +350,23 @@ app.layout = html.Div([
             style={'width': '48%', 'display': 'inline-block', 'align': 'right'})
     ],
         ),
+
+    dcc.Markdown('''
+    ##### These are the all-time prices for all neighborhoods in dataset:
+    '''),
+    html.Div([
+        html.Div([
+            dcc.Graph(id='all_time_median_chart_all_neighborhoods'),
+        ],
+            style={'width': '48%', 'display': 'inline-block', 'align': 'left'}),
+
+        html.Div([
+            dcc.Graph(id='all_time_mean_chart_all_neighborhoods'),
+        ],
+            style={'width': '48%', 'display': 'inline-block', 'align': 'right'})
+    ],
+        ),
+
 ])
 
 
@@ -478,6 +520,92 @@ def update_price_by_date_series(neighborhoods):
     layout = go.Layout(
         title = "Median Monthly Rent by Neighborhood",
         xaxis = {"title": "Median Rent",
+
+                 },
+        yaxis = {"title": "neighborhood",
+                 'automargin': True,
+                 },
+
+    )
+
+    figure = {'data': [trace], 'layout': layout}
+
+    return figure
+
+
+# all time median price for all neighborhoods
+@app.callback(
+    Output('all_time_median_chart_all_neighborhoods', 'figure'),
+    [Input('size_selection', 'value')]
+)
+def update_median_all_neighborhoods(sizes):
+    """"""
+
+    df = apartment_data.loc[apartment_data['size'].isin(sizes)]
+    df = df.loc[df['neighborhood'].isin(most_common_apartments['neighborhood'])]
+
+    df_median, df_mean = get_all_time_prices(df)
+
+    neighborhood_df = df_median.sort_values(
+        by='post_price', ascending=True
+    )
+
+    # scatter trace per neighborhood
+    trace = go.Bar(
+        x=neighborhood_df['post_price'],
+        y=neighborhood_df['neighborhood'],
+        orientation='h',
+        opacity = 0.8,
+        textposition='auto',
+        text=neighborhood_df['post_price']
+    )
+
+    layout = go.Layout(
+        title = "Median Monthly Rent by Neighborhood",
+        xaxis = {"title": "Median Rent",
+
+                 },
+        yaxis = {"title": "neighborhood",
+                 'automargin': True,
+                 },
+
+    )
+
+    figure = {'data': [trace], 'layout': layout}
+
+    return figure
+
+
+# all time mean price for all neighborhoods
+@app.callback(
+    Output('all_time_mean_chart_all_neighborhoods', 'figure'),
+    [Input('size_selection', 'value')]
+)
+def update_mean_all_neighborhoods(sizes):
+    """"""
+
+    df = apartment_data.loc[apartment_data['size'].isin(sizes)]
+    df = df.loc[df['neighborhood'].isin(most_common_apartments['neighborhood'])]
+
+    df_median, df_mean = get_all_time_prices(df)
+
+    neighborhood_df = df_mean.sort_values(
+        by='post_price', ascending=True
+    )
+
+    # scatter trace per neighborhood
+    trace = go.Bar(
+        x=neighborhood_df['post_price'],
+        y=neighborhood_df['neighborhood'],
+        orientation='h',
+        opacity = 0.8,
+        textposition='auto',
+        text=neighborhood_df['post_price']
+    )
+
+    layout = go.Layout(
+        title = "Average Monthly Rent by Neighborhood",
+        xaxis = {"title": "Average Rent",
 
                  },
         yaxis = {"title": "neighborhood",
