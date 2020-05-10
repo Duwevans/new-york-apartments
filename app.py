@@ -336,7 +336,7 @@ app.layout = html.Div([
     ]),
 
     dcc.Markdown('''
-    ##### These are the all-time prices for the neighborhoods you're looking in:
+    ### These are the all-time prices for the neighborhoods you're looking in:
     '''),
     html.Div([
         html.Div([
@@ -352,18 +352,18 @@ app.layout = html.Div([
         ),
 
     dcc.Markdown('''
-    ##### These are the all-time prices for all neighborhoods in dataset:
+    ### These are the all-time prices for all neighborhoods in dataset:
     '''),
     html.Div([
         html.Div([
             dcc.Graph(id='all_time_median_chart_all_neighborhoods'),
         ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'left', 'height': 1200}),
+            style={'width': '48%', 'display': 'inline-block', 'align': 'left', 'height': '100%'}),
 
         html.Div([
             dcc.Graph(id='all_time_mean_chart_all_neighborhoods'),
         ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'right', 'height': 1200})
+            style={'width': '48%', 'display': 'inline-block', 'align': 'right', 'height': '100%'})
     ],
         ),
 
