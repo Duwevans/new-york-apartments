@@ -358,12 +358,12 @@ app.layout = html.Div([
         html.Div([
             dcc.Graph(id='all_time_median_chart_all_neighborhoods'),
         ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'left', 'height': '100%'}),
+            style={'width': '48%', 'display': 'inline-block', 'align': 'left', 'height': '800px'}),
 
         html.Div([
             dcc.Graph(id='all_time_mean_chart_all_neighborhoods'),
         ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'right', 'height': '100%'})
+            style={'width': '48%', 'display': 'inline-block', 'align': 'right', 'height': '800px'})
     ],
         ),
 
