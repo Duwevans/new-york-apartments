@@ -302,19 +302,8 @@ app.layout = html.Div([
 
     html.Div(id='output-container-range-slider'),
 
-    html.Div([
-            dcc.Graph(id='post_by_date_series'),
-        ]),
-    html.Div([
-            dcc.Graph(id='price_by_date_series'),
-        ]),
-    html.Div([
-            dcc.Graph(id='all_prices_histogram'),
-        ]),
-
     dcc.Markdown('''
-
-    ##### I found the following posts for you:
+    ### I found the following posts for you:
     '''),
 
     # data table
@@ -336,6 +325,21 @@ app.layout = html.Div([
         ),
     ]),
 
+    dcc.Markdown('''
+    #### Here are some insights on the posts found:
+    '''),
+
+    html.Div([
+            dcc.Graph(id='post_by_date_series'),
+        ]),
+    html.Div([
+            dcc.Graph(id='price_by_date_series'),
+        ]),
+    html.Div([
+            dcc.Graph(id='all_prices_histogram'),
+        ]),
+
+    
     dcc.Markdown('''
     ### These are the all-time prices for the neighborhoods you're looking in:
     '''),
