@@ -149,16 +149,16 @@ def determine_apt_size(post_title):
 
     if any(word in post_title for word in studio):
         apt_size = 'studio'
-    elif any(word in post_title for word in one_bed):
-        apt_size = 'one bedroom'
-    elif any(word in post_title for word in two_bed):
-        apt_size = 'two bedroom'
-    elif any(word in post_title for word in three_bed):
-        apt_size = 'three bedroom'
-    elif any(word in post_title for word in four_bed):
-        apt_size = 'four bedroom'
     elif any(word in post_title for word in five_bed):
         apt_size = 'five bedroom'
+    elif any(word in post_title for word in four_bed):
+        apt_size = 'four bedroom'
+    elif any(word in post_title for word in three_bed):
+        apt_size = 'three bedroom'
+    elif any(word in post_title for word in two_bed):
+        apt_size = 'two bedroom'
+    elif any(word in post_title for word in one_bed):
+        apt_size = 'one bedroom'
     else:
         apt_size = 'other'
 
@@ -330,16 +330,15 @@ app.layout = html.Div([
     '''),
 
     html.Div([
+            dcc.Graph(id='all_prices_histogram'),
+        ]),
+    html.Div([
             dcc.Graph(id='post_by_date_series'),
         ]),
     html.Div([
             dcc.Graph(id='price_by_date_series'),
         ]),
-    html.Div([
-            dcc.Graph(id='all_prices_histogram'),
-        ]),
 
-    
     dcc.Markdown('''
     ### These are the all-time prices for the neighborhoods you're looking in:
     '''),
