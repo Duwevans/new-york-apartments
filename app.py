@@ -139,11 +139,11 @@ def get_starting_data(connection):
 def determine_apt_size(post_title):
     """"""
     studio = ['studio']
-    one_bed = ['1br', 'one bedroom', '1 bedroom', '1 br', '1 bdr', '1bdr']
-    two_bed = ['2br', 'two bedroom', '2 bedroom', '2 br', '2 bdr', '2bdr']
-    three_bed = ['3br', 'three bedroom', '3 bedroom', '3 br', '3 bdr', '3bdr']
-    four_bed = ['4br', 'four bedroom', '4 bedroom', '4 br', '4 bdr', '4bdr']
-    five_bed = ['5br', 'five bedroom', '5 bedroom', '5 br', '5 bdr', '5bdr']
+    one_bed = ['1br', 'one bedroom', '1 bedroom', '1 br', '1 bdr', '1bdr', '1bd', '1 bed', '1 bd']
+    two_bed = ['2br', 'two bedroom', '2 bedroom', '2 br', '2 bdr', '2bdr', '2bd', '2 bed', '2 bd']
+    three_bed = ['3br', 'three bedroom', '3 bedroom', '3 br', '3 bdr', '3bdr', '3bd', '3 bed', '3 bd']
+    four_bed = ['4br', 'four bedroom', '4 bedroom', '4 br', '4 bdr', '4bdr', '4bd', '4 bed', '4 bd']
+    five_bed = ['5br', 'five bedroom', '5 bedroom', '5 br', '5 bdr', '5bdr', '5bd', '5 bed', '5 bd']
 
     post_title = post_title.lower()
 
@@ -198,7 +198,7 @@ apartment_data['size'] = apartment_data.apply(
         axis=1)
 
 app = dash.Dash('apartments', external_stylesheets=external_stylesheets)
-app.title = 'NYC Room $s'
+app.title = 'NYC Room Search'
 
 server = app.server
 
@@ -215,7 +215,8 @@ sizes = apartment_data['size'].unique().tolist()
 # create the layout of the app
 app.layout = html.Div([
 
-    html.Div([html.H1("What Does a Room Cost in NYC?")], style={'textAlign': "center"}),
+    html.Div([html.H1("Looking for a Room in NYC?")], style={'textAlign': "center"}),
+    html.Div([html.H2("Here's some data to help.")], style={'textAlign': "center"}),
     html.Div([html.H5(
         "The data below details the monthly rent prices for single rooms in apartment shares across NYC neighborhoods. "
         "This data is scraped from advertisements posted on craigslist on a daily basis. "
@@ -727,9 +728,6 @@ def update_recent_posts_table(neighborhoods, price_range, sizes):
     data = apartment_data_filtered.to_dict(orient='records')
 
     return data
-
-
-# todo: all neighborhood price chart
 
 
 if __name__ == '__main__':
