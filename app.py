@@ -45,6 +45,8 @@ def get_apartment_data():
 
     apartment_data['post_date'] = pd.to_datetime(apartment_data['post_datetime']).dt.date
 
+    apartment_data['post_title_text'] = apartment_data['post_title_text'].str.lower()
+
     # determine size of the apartment
     apartment_data['size'] = apartment_data.apply(
         lambda x: determine_apt_size(
