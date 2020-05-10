@@ -220,7 +220,6 @@ def make_layout():
 
         html.Div([html.H1("Looking for a Room in NYC?")], style={'textAlign': "center"}),
         html.Div([html.H2("Here's some data to help.")], style={'textAlign': "center"}),
-        html.H5('Data updated at: ' + str(datetime.datetime.now())),
         html.Div([html.H5(
             "The data below details the monthly rent prices for single rooms in apartment shares across NYC neighborhoods. "
             "This data is scraped from advertisements posted on craigslist on a daily basis. "
