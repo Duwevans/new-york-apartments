@@ -11,26 +11,32 @@ import plotly.graph_objs as go
 from datetime import datetime
 import psycopg2
 import os
+import time
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
 external_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap-grid.min.css"]
 
-# amazon rds database connection
-connection = psycopg2.connect(
-host = os.environ['HOST'],
-port = '5432',
-user = 'duncan',
-password = os.environ['PASSWORD'],
-database = 'postgres'
-)
+
+# number of seconds between re-calculating the data
+# update every 12 hours
+UPDATE_INTERVAL = 30
 
 
-def get_dataset(connection):
-    """"""
-    #  apartment_data = pd.read_csv('https://raw.githubusercontent.com/Duwevans/'
-    #                             'new-york-apartments/master/apartment_data.csv')
-    #  apartment_data['post_date'] = pd.to_datetime(apartment_data['post_datetime']).dt.date
+def get_apartment_data():
+    """gets apartment data from rds database"""
+    global apartment_data
+
+    # amazon rds database connection
+    connection = psycopg2.connect(
+        host=os.environ['HOST'],
+        port='5432',
+        user='duncan',
+        password=os.environ['PASSWORD'],
+        database='postgres'
+    )
 
     sql = """
     SELECT * FROM rooms;
@@ -39,7 +45,20 @@ def get_dataset(connection):
 
     apartment_data['post_date'] = pd.to_datetime(apartment_data['post_datetime']).dt.date
 
-    return apartment_data
+    # determine size of the apartment
+    apartment_data['size'] = apartment_data.apply(
+        lambda x: determine_apt_size(
+            x['post_title_text']
+        ),
+        axis=1)
+
+
+def get_new_data_every(period=UPDATE_INTERVAL):
+    """Update the data every 'period' seconds"""
+    while True:
+        get_apartment_data()
+        print("data updated")
+        time.sleep(period)
 
 
 def apply_price_range_apartment_data(apartment_data, low_, high_):
@@ -124,17 +143,6 @@ def get_all_time_prices(apartment_data):
     return df_median, df_mean
 
 
-def get_starting_data(connection):
-
-    apartment_data = get_dataset(connection)
-
-    all_dates = get_posts_per_date(apartment_data)
-
-    all_prices = get_median_price_per_date(apartment_data)
-
-    return apartment_data, all_dates, all_prices
-
-
 # estimate apartment size/bedrooms
 def determine_apt_size(post_title):
     """"""
@@ -185,22 +193,14 @@ def get_most_common_neighborhoods(apartment_data):
     return most_common_neighborhoods
 
 
-# get major data sets
-apartment_data, all_dates, all_prices = get_starting_data(connection)
-
-median_prices, mean_prices = get_all_time_prices(apartment_data)
-
-# determine size of the apartment
-apartment_data['size'] = apartment_data.apply(
-        lambda x: determine_apt_size(
-            x['post_title_text']
-            ),
-        axis=1)
-
 app = dash.Dash('apartments', external_stylesheets=external_stylesheets)
 app.title = 'NYC Room Search'
 
+# get initial data
+get_apartment_data()
+
 server = app.server
+
 
 most_common_apartments = get_most_common_neighborhoods(apartment_data)
 
@@ -212,167 +212,174 @@ sorted_hoods = hoods['neighborhood'].tolist()
 
 sizes = apartment_data['size'].unique().tolist()
 
+
 # create the layout of the app
-app.layout = html.Div([
+def make_layout():
 
-    html.Div([html.H1("Looking for a Room in NYC?")], style={'textAlign': "center"}),
-    html.Div([html.H2("Here's some data to help.")], style={'textAlign': "center"}),
-    html.Div([html.H5(
-        "The data below details the monthly rent prices for single rooms in apartment shares across NYC neighborhoods. "
-        "This data is scraped from advertisements posted on craigslist on a daily basis. "
-        "Data collection started in April of 2020."
-    )], style={'textAlign': "center"}),
+    return html.Div([
 
-    dcc.Markdown('''
-    
-        Looking for a room in which neighborhood(s):
-        '''),
+        html.Div([html.H1("Looking for a Room in NYC?")], style={'textAlign': "center"}),
+        html.Div([html.H2("Here's some data to help.")], style={'textAlign': "center"}),
+        html.H5('Data updated at: ' + str(datetime.datetime.now())),
+        html.Div([html.H5(
+            "The data below details the monthly rent prices for single rooms in apartment shares across NYC neighborhoods. "
+            "This data is scraped from advertisements posted on craigslist on a daily basis. "
+            "Data collection started in April of 2020."
+        )], style={'textAlign': "center"}),
 
-    dcc.Dropdown(
-        id='hood_selection',
-        options=[
-            {'label': c, 'value': c}
-            for c in sorted_hoods
-
-        ],
-        value=[
-            'Upper East Side',
-            'East Village',
-            'Upper West Side',
-        ],
-        multi=True,
-        clearable=False,
-    ),
-
-    dcc.Markdown('''
-        Looking for a single room in which size apartment (two+ bedrooms are shared apartments):
-        '''),
-    # todo: room selector
-
-    dcc.Dropdown(
-        id='size_selection',
-        options=[
-            {'label': c, 'value': c}
-            for c in sizes
-
-        ],
-        value=[
-            'studio',
-            'one bedroom',
-            'two bedroom',
-            'three bedroom',
-            'four bedroom',
-            'five bedroom',
-            'other',
-        ],
-        multi=True,
-        clearable=False,
-    ),
-
-    dcc.Markdown('''
-        Looking with a price range of:
-        '''),
-
-    html.Div([
-        dcc.RangeSlider(
-            id='price_range_slider',
-            min=1000,
-            max=4000,
-            step=50,
-            marks={
-                    1000: '$1000',
-                    1500: '$1500',
-                    2000: '$2000',
-                    2500: '$2500',
-                    3000: '$3000',
-                    3500: '$3500',
-                },
-            value=[1000, 2500],
-            allowCross=False
-
-        ),
-    ]),
-    dcc.Markdown('''
+        dcc.Markdown('''
         
-        Showing apartments from: 
-        '''),
-    dcc.Markdown('''
+            Looking for a room in which neighborhood(s):
+            '''),
 
-        '''),
+        dcc.Dropdown(
+            id='hood_selection',
+            options=[
+                {'label': c, 'value': c}
+                for c in sorted_hoods
 
-    html.Div(id='output-container-range-slider'),
-
-    dcc.Markdown('''
-    ### I found the following posts for you:
-    '''),
-
-    # data table
-    html.Div([
-        dash_table.DataTable(
-            id='recent_posts_table',
-            columns=[
-                {'name': 'Neighborhood', 'id': 'neighborhood'},
-                {'name': 'Price', 'id': 'post_price'},
-                {'name': 'Title', 'id': 'post_title_text'},
-                {'name': 'Date', 'id': 'post_date'},
-                {'name': 'Size', 'id': 'size'},
-                {'name': 'Link', 'id': 'post_link'},
             ],
-            style_table={
-                    'maxHeight': '500px',
-                    'overflowY': 'scroll',
-    },
-        ),
-    ]),
-
-    dcc.Markdown('''
-    #### Here are some insights on the posts found:
-    '''),
-
-    html.Div([
-            dcc.Graph(id='all_prices_histogram'),
-        ]),
-    html.Div([
-            dcc.Graph(id='post_by_date_series'),
-        ]),
-    html.Div([
-            dcc.Graph(id='price_by_date_series'),
-        ]),
-
-    dcc.Markdown('''
-    ### These are the all-time prices for the neighborhoods you're looking in:
-    '''),
-    html.Div([
-        html.Div([
-            dcc.Graph(id='all_time_median_chart'),
-        ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'left'}),
-
-        html.Div([
-            dcc.Graph(id='all_time_average_chart'),
-        ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'right'})
-    ],
+            value=[
+                'Upper East Side',
+                'East Village',
+                'Upper West Side',
+            ],
+            multi=True,
+            clearable=False,
         ),
 
-    dcc.Markdown('''
-    ### These are the all-time prices for all neighborhoods in dataset:
-    '''),
-    html.Div([
-        html.Div([
-            dcc.Graph(id='all_time_median_chart_all_neighborhoods'),
-        ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'left', 'height': '800px'}),
+        dcc.Markdown('''
+            Looking for a single room in which size apartment (two+ bedrooms are shared apartments):
+            '''),
+        # todo: room selector
 
-        html.Div([
-            dcc.Graph(id='all_time_mean_chart_all_neighborhoods'),
-        ],
-            style={'width': '48%', 'display': 'inline-block', 'align': 'right', 'height': '800px'})
-    ],
+        dcc.Dropdown(
+            id='size_selection',
+            options=[
+                {'label': c, 'value': c}
+                for c in sizes
+
+            ],
+            value=[
+                'studio',
+                'one bedroom',
+                'two bedroom',
+                'three bedroom',
+                'four bedroom',
+                'five bedroom',
+                'other',
+            ],
+            multi=True,
+            clearable=False,
         ),
 
-])
+        dcc.Markdown('''
+            Looking with a price range of:
+            '''),
 
+        html.Div([
+            dcc.RangeSlider(
+                id='price_range_slider',
+                min=1000,
+                max=4000,
+                step=50,
+                marks={
+                        1000: '$1000',
+                        1500: '$1500',
+                        2000: '$2000',
+                        2500: '$2500',
+                        3000: '$3000',
+                        3500: '$3500',
+                    },
+                value=[1000, 2500],
+                allowCross=False
+
+            ),
+        ]),
+        dcc.Markdown('''
+            
+            Showing apartments from: 
+            '''),
+        dcc.Markdown('''
+    
+            '''),
+
+        html.Div(id='output-container-range-slider'),
+
+        dcc.Markdown('''
+        ### I found the following posts for you:
+        '''),
+
+        # data table
+        html.Div([
+            dash_table.DataTable(
+                id='recent_posts_table',
+                columns=[
+                    {'name': 'Neighborhood', 'id': 'neighborhood'},
+                    {'name': 'Price', 'id': 'post_price'},
+                    {'name': 'Title', 'id': 'post_title_text'},
+                    {'name': 'Date', 'id': 'post_date'},
+                    {'name': 'Size', 'id': 'size'},
+                    {'name': 'Link', 'id': 'post_link'},
+                ],
+                style_table={
+                        'maxHeight': '500px',
+                        'overflowY': 'scroll',
+        },
+            ),
+        ]),
+
+        dcc.Markdown('''
+        #### Here are some insights on the posts found:
+        '''),
+
+        html.Div([
+                dcc.Graph(id='all_prices_histogram'),
+            ]),
+        html.Div([
+                dcc.Graph(id='post_by_date_series'),
+            ]),
+        html.Div([
+                dcc.Graph(id='price_by_date_series'),
+            ]),
+
+        dcc.Markdown('''
+        ### These are the all-time prices for the neighborhoods you're looking in:
+        '''),
+        html.Div([
+            html.Div([
+                dcc.Graph(id='all_time_median_chart'),
+            ],
+                style={'width': '48%', 'display': 'inline-block', 'align': 'left'}),
+
+            html.Div([
+                dcc.Graph(id='all_time_average_chart'),
+            ],
+                style={'width': '48%', 'display': 'inline-block', 'align': 'right'})
+        ],
+            ),
+
+        dcc.Markdown('''
+        ### These are the all-time prices for all neighborhoods in dataset:
+        '''),
+        html.Div([
+            html.Div([
+                dcc.Graph(id='all_time_median_chart_all_neighborhoods'),
+            ],
+                style={'width': '48%', 'display': 'inline-block', 'align': 'left', 'height': '800px'}),
+
+            html.Div([
+                dcc.Graph(id='all_time_mean_chart_all_neighborhoods'),
+            ],
+                style={'width': '48%', 'display': 'inline-block', 'align': 'right', 'height': '800px'})
+        ],
+            ),
+
+    ])
+
+
+# generate layout
+app.layout = make_layout
 
 @app.callback(
     dash.dependencies.Output('output-container-range-slider', 'children'),
@@ -507,6 +514,8 @@ def update_price_by_date_series(neighborhoods, price_range, sizes):
 def update_price_by_date_series(neighborhoods):
     """"""
 
+    median_prices, df_mean = get_all_time_prices(apartment_data)
+
     neighborhood_df = median_prices.loc[median_prices['neighborhood'].isin(neighborhoods)].sort_values(
         by='post_price', ascending=True
     )
@@ -630,6 +639,8 @@ def update_mean_all_neighborhoods(sizes):
 def update_price_by_date_series(neighborhoods):
     """"""
 
+    df_median, mean_prices = get_all_time_prices(apartment_data)
+
     neighborhood_df = mean_prices.loc[mean_prices['neighborhood'].isin(neighborhoods)].sort_values(
         by='post_price', ascending=True
     )
@@ -731,6 +742,11 @@ def update_recent_posts_table(neighborhoods, price_range, sizes):
     data = apartment_data_filtered.to_dict(orient='records')
 
     return data
+
+
+# Run the function in another thread
+executor = ThreadPoolExecutor(max_workers=1)
+executor.submit(get_new_data_every)
 
 
 if __name__ == '__main__':
