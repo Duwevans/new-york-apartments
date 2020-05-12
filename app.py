@@ -14,6 +14,7 @@ import os
 import time
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from apartment_search import run_apartment_search
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -21,8 +22,9 @@ external_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/
 
 
 # number of seconds between re-calculating the data
-# update every 12 hours
-UPDATE_INTERVAL = 43200
+# update every 6 hours
+#  UPDATE_INTERVAL = 21600
+UPDATE_INTERVAL = 300
 
 
 def get_apartment_data():
@@ -58,7 +60,12 @@ def get_apartment_data():
 def get_new_data_every(period=UPDATE_INTERVAL):
     """Update the data every 'period' seconds"""
     while True:
+        # run the craigslist scrape process
+        run_apartment_search()
+
+        # update data in the app
         get_apartment_data()
+
         print("data updated")
         time.sleep(period)
 
