@@ -23,8 +23,7 @@ external_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/
 
 # number of seconds between re-calculating the data
 # update every 6 hours
-#  UPDATE_INTERVAL = 21600
-UPDATE_INTERVAL = 300
+UPDATE_INTERVAL = 21600
 
 
 def get_apartment_data():
@@ -388,6 +387,7 @@ def make_layout():
 
 # generate layout
 app.layout = make_layout
+
 
 @app.callback(
     dash.dependencies.Output('output-container-range-slider', 'children'),
