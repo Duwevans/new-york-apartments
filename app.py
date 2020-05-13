@@ -232,8 +232,11 @@ def make_layout():
             "The data below details the monthly rent prices for single rooms in apartment shares across NYC neighborhoods. "
             "This data is scraped from advertisements posted on craigslist on a daily basis. "
             "Data collection started in April of 2020."
-            "View the repository for this app [here.](https://github.com/Duwevans/new-york-apartments)"
         )], style={'textAlign': "center"}),
+
+        dcc.Markdown('''
+            "[View the repository for this app here.](https://github.com/Duwevans/new-york-apartments)"
+        '''),
 
         dcc.Markdown('''
         
