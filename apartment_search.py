@@ -136,18 +136,22 @@ def update_data_records(all_rooms, all_apartments):
 def run_apartment_search():
     """"""
     searches = {
-        "manhattan": "https://newyork.craigslist.org/search/mnh/roo?min_price=1000",
-        "brooklyn": "https://newyork.craigslist.org/search/brk/roo?min_price=1000",
-        "new_jersey": "https://newyork.craigslist.org/search/jsy/roo?min_price=1000",
+        "manhattan": "https://newyork.craigslist.org/search/mnh/roo?min_price=800",
+        "brooklyn": "https://newyork.craigslist.org/search/brk/roo?min_price=800",
+        "new_jersey": "https://newyork.craigslist.org/search/jsy/roo?min_price=800",
+        "queens": "https://newyork.craigslist.org/search/que/roo?min_price=800",
+        "bronx": "https://newyork.craigslist.org/search/brx/roo?min_price=800"
     }
     print('\nsearching for room shares...')
     all_rooms = get_apartment_data(searches)
 
     # repeat for full apartments
     apartment_searches = {
-        "manhattan": "https://newyork.craigslist.org/search/mnh/apa?min_price=1000",
-        "brooklyn": "https://newyork.craigslist.org/search/brk/apa?min_price=1000",
-        "new_jersey": "https://newyork.craigslist.org/search/jsy/apa?min_price=1000",
+        "manhattan": "https://newyork.craigslist.org/search/mnh/apa?min_price=800",
+        "brooklyn": "https://newyork.craigslist.org/search/brk/apa?min_price=800",
+        "new_jersey": "https://newyork.craigslist.org/search/jsy/apa?min_price=800",
+        "queens": "https://newyork.craigslist.org/search/que/apa?min_price=800",
+        "bronx": "https://newyork.craigslist.org/search/brx/apa?min_price=800"
     }
     print('\nsearching for apartments...')
     all_apartments = get_apartment_data(apartment_searches)
