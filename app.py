@@ -235,7 +235,7 @@ def make_layout():
         )], style={'textAlign': "center"}),
 
         dcc.Markdown('''
-            "[View the repository for this app here.](https://github.com/Duwevans/new-york-apartments)"
+            [View the repository for this app here.](https://github.com/Duwevans/new-york-apartments)
         '''),
 
         dcc.Markdown('''
