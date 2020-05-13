@@ -291,7 +291,7 @@ def make_layout():
         html.Div([
             dcc.RangeSlider(
                 id='price_range_slider',
-                min=1000,
+                min=800,
                 max=4000,
                 step=50,
                 marks={
