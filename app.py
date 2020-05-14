@@ -757,7 +757,7 @@ def update_recent_posts_table(neighborhoods, price_range, sizes):
 
 
 # Run the function in another thread
-executor = ThreadPoolExecutor(max_workers=1)
+executor = ThreadPoolExecutor(max_workers=2)
 executor.submit(get_new_data_every)
 
 
