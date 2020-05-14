@@ -22,8 +22,8 @@ external_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/
 
 
 # number of seconds between re-calculating the data
-# update every 6 hours
-UPDATE_INTERVAL = 300
+# update every hour
+UPDATE_INTERVAL = 3600
 
 
 def get_apartment_data():
@@ -65,7 +65,6 @@ def get_new_data_every(period=UPDATE_INTERVAL):
         # update data in the app
         get_apartment_data()
 
-        print("data updated")
         time.sleep(period)
 
 
