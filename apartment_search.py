@@ -24,7 +24,6 @@ def get_apartment_data(searches):
 
     # loop through each of the locations
     for location, link in searches.items():
-        print('location: ' + location + '\n' + 'link: ' + link + '\n')
 
         # momentary sleep
         sleep(randint(1, 5))
@@ -34,7 +33,7 @@ def get_apartment_data(searches):
         html_soup = BeautifulSoup(response.text, 'html.parser')
 
         posts = html_soup.find_all('li', class_= 'result-row')
-        print(str(len(posts)) + " posts found.")
+        print('location: ' + location + "\nposts found: " + str(len(posts)) + "\n\n")
 
         # loop through each of the posts
         for i in range(0, (len(posts) - 1)):
