@@ -23,7 +23,7 @@ external_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/
 
 # number of seconds between re-calculating the data
 # update every 6 hours
-UPDATE_INTERVAL = 21600
+UPDATE_INTERVAL = 300
 
 
 def get_apartment_data():
