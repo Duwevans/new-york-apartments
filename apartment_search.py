@@ -18,8 +18,6 @@ pd.options.mode.chained_assignment = None  # default='warn'
 def get_apartment_data(searches):
     """main function for searching apartment postings"""
 
-    print('\nStarting craigslist apartment share search...\n')
-
     all_apartments = pd.DataFrame()
 
     # loop through each of the locations
@@ -33,7 +31,7 @@ def get_apartment_data(searches):
         html_soup = BeautifulSoup(response.text, 'html.parser')
 
         posts = html_soup.find_all('li', class_= 'result-row')
-        print('location: ' + location + "\nposts found: " + str(len(posts)) + "\n\n")
+        print('location: ' + location + "\nposts found: " + str(len(posts)) + "\n")
 
         # loop through each of the posts
         for i in range(0, (len(posts) - 1)):

@@ -261,8 +261,6 @@ def make_layout():
         dcc.Markdown('''
             Looking for a single room in which size apartment (two+ bedrooms are shared apartments):
             '''),
-        # todo: room selector
-
         dcc.Dropdown(
             id='size_selection',
             options=[
@@ -301,7 +299,7 @@ def make_layout():
                         3000: '$3000',
                         3500: '$3500',
                     },
-                value=[1000, 2500],
+                value=[1000, 2000],
                 allowCross=False
 
             ),
