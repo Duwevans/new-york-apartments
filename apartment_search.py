@@ -101,9 +101,39 @@ def update_data_records(all_rooms, all_apartments):
 
     try:
 
-        print('reading rds database... ')
+        print('reading rds room share database... ')
         sql = ("""
         SELECT id, post_link FROM rooms
+        """)
+        x = pd.read_sql(sql, con=con)
+
+        # drop any duplicate ids
+        data = all_rooms.loc[~all_rooms['id'].isin(x['id'])]
+        data = data.drop_duplicates(subset='id')
+        # drop duplicate links
+        data = data.loc[~data['post_link'].isin(x['post_link'])]
+
+        if len(data) > 0:
+            print(str(len(data)) + " new records will be added. ")
+            data.to_sql('rooms', con=con, if_exists='append', index=False)
+
+            print('\nCraigslist room share database successfully updated with '
+                  + str(len(data)) + " new posts.")
+        else:
+            print('no new records to add.')
+
+    #  except IntegrityError:
+    except:
+        print('error on apartment share sql append.')
+        print('apartment share databases not updated.')
+
+    # todo: repeat for full apartments
+
+    try:
+
+        print('reading rds apartment database... ')
+        sql = ("""
+        SELECT id, post_link FROM apartments
         """)
         x = pd.read_sql(sql, con=con)
 
@@ -115,7 +145,7 @@ def update_data_records(all_rooms, all_apartments):
 
         if len(data) > 0:
             print(str(len(data)) + " new records will be added. ")
-            data.to_sql('rooms', con=con, if_exists='append', index=False)
+            data.to_sql('apartments', con=con, if_exists='append', index=False)
 
             print('\nCraigslist apartment database successfully updated with '
                   + str(len(data)) + " new posts.")
@@ -126,8 +156,6 @@ def update_data_records(all_rooms, all_apartments):
     except:
         print('error on apartment share sql append.')
         print('apartment share databases not updated.')
-
-    # todo: repeat for full apartments
 
 
 def run_apartment_search():
