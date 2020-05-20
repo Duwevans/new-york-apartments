@@ -13,6 +13,8 @@ what's realistic to expect in the city.
 
 Data collection started in early April 2020.
 
+Check out my post on [developing this dashboard.](https://medium.com/@duncanevans_72887/web-scraping-nyc-apartment-data-with-python-beautiful-soup-dash-and-heroku-4e0a5af40817)
+
 This web scraping process is built with [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/). 
 
 The user interface is built in [Dash](https://dash.plotly.com/), which is an extension of 
