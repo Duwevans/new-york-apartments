@@ -234,12 +234,15 @@ def make_layout():
         )], style={'textAlign': "center"}),
 
         dcc.Markdown('''
-            [View the repository for this app here.](https://github.com/Duwevans/new-york-apartments)
+            View the [repository for this app here.](https://github.com/Duwevans/new-york-apartments)
+        '''),
+        dcc.Markdown('''
+            Check out my post on [developing this dashboard.] (https://medium.com/@duncanevans_72887/web-scraping-nyc-apartment-data-with-python-beautiful-soup-dash-and-heroku-4e0a5af40817)
         '''),
 
         dcc.Markdown('''
         
-            Looking for a room in which neighborhood(s):
+            Select a room in which neighborhood(s):
             '''),
 
         dcc.Dropdown(
@@ -259,7 +262,7 @@ def make_layout():
         ),
 
         dcc.Markdown('''
-            Looking for a single room in which size apartment (two+ bedrooms are shared apartments):
+            Select a single room in which size apartment (two+ bedrooms are shared apartments):
             '''),
         dcc.Dropdown(
             id='size_selection',
@@ -282,7 +285,7 @@ def make_layout():
         ),
 
         dcc.Markdown('''
-            Looking with a price range of:
+            Set a monthly price range of:
             '''),
 
         html.Div([
